@@ -3,16 +3,23 @@
 require_once __DIR__ . '/config/config.php';
 require_once __DIR__ . '/controllers/BaseController.php';
 
-$controller = new BaseController();
+// Create controller instance to use its methods
+class LoginPageController extends BaseController {
+    public function showPage() {
+        // If already logged in, redirect to dashboard
+        if ($this->isLoggedIn()) {
+            $this->redirect('dashboard.php');
+            exit;
+        }
 
-// If already logged in, redirect to dashboard
-if ($controller->isLoggedIn()) {
-    $controller->redirect('dashboard.php');
-    exit;
+        // Get any messages
+        $message = $this->getMessage();
+        return $message;
+    }
 }
 
-// Get any messages
-$message = $controller->getMessage();
+$controller = new LoginPageController();
+$message = $controller->showPage();
 ?>
 <!DOCTYPE html>
 <html lang="es">

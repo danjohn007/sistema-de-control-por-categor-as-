@@ -8,13 +8,18 @@
 require_once __DIR__ . '/config/config.php';
 require_once __DIR__ . '/controllers/BaseController.php';
 
-$controller = new BaseController();
-
-// If logged in, redirect to dashboard
-if ($controller->isLoggedIn()) {
-    $controller->redirect('dashboard.php');
-} else {
-    // Not logged in, redirect to login
-    $controller->redirect('login.php');
+class IndexController extends BaseController {
+    public function handleRequest() {
+        // If logged in, redirect to dashboard
+        if ($this->isLoggedIn()) {
+            $this->redirect('dashboard.php');
+        } else {
+            // Not logged in, redirect to login
+            $this->redirect('login.php');
+        }
+    }
 }
+
+$controller = new IndexController();
+$controller->handleRequest();
 ?>

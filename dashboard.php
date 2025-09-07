@@ -3,13 +3,18 @@
 require_once __DIR__ . '/config/config.php';
 require_once __DIR__ . '/controllers/BaseController.php';
 
-$controller = new BaseController();
+class DashboardController extends BaseController {
+    public function showDashboard() {
+        // Require authentication
+        $this->requireAuth();
+        
+        // Get any messages
+        return $this->getMessage();
+    }
+}
 
-// Require authentication
-$controller->requireAuth();
-
-// Get any messages
-$message = $controller->getMessage();
+$controller = new DashboardController();
+$message = $controller->showDashboard();
 ?>
 <!DOCTYPE html>
 <html lang="es">

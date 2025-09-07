@@ -47,6 +47,6 @@ define('DB_PASS', 'db_pass');
 
 // Application configuration
 define('APP_NAME', 'Sistema de Control por Categorías');
-define('BASE_URL', '/control/');
+define('BASE_URL', '/'); // Fixed to work with development server
 
 ?>
