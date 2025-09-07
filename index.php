@@ -4,12 +4,14 @@
  * Punto de entrada principal de la aplicación
  */
 
-// Iniciar sesión
-session_start();
-
-// Incluir archivos de configuración
+// Incluir archivos de configuración ANTES de iniciar sesión
 require_once 'config/config.php';
 require_once 'config/database.php';
+
+// Now safe to start session (config has set up session parameters)
+if (php_sapi_name() !== 'cli') {
+    session_start();
+}
 
 // Incluir controladores
 require_once 'controllers/BaseController.php';
