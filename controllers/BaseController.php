@@ -7,6 +7,10 @@ abstract class BaseController {
     protected $db;
     
     public function __construct() {
+        // Ensure output buffering is active to prevent header issues
+        if (!ob_get_level()) {
+            ob_start();
+        }
         $this->db = getDB();
     }
     
@@ -42,6 +46,21 @@ abstract class BaseController {
      * Redirigir a otra página
      */
     protected function redirect($url) {
+        // Check if headers have already been sent
+        if (headers_sent($file, $line)) {
+            // If headers were sent, we can't redirect normally
+            // Use JavaScript redirect as fallback
+            echo "<script>window.location.href = '$url';</script>";
+            echo "<noscript><meta http-equiv='refresh' content='0;url=$url'></noscript>";
+            return;
+        }
+        
+        // Clean any output buffer before redirecting
+        if (ob_get_level()) {
+            ob_clean();
+        }
+        
+        // Safe to send headers
         header("Location: {$url}");
         exit;
     }
