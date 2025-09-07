@@ -1,38 +1,52 @@
 <?php
 /**
- * Configuración general de la aplicación
+ * Configuration file for session management
+ * This file handles session configuration BEFORE starting the session
+ * to avoid "Session ini settings cannot be changed when a session is active" errors
  */
 
-// Configuración de la aplicación
-define('APP_NAME', 'Sistema de Control de Gastos e Ingresos');
-define('APP_VERSION', '1.0.0');
+// Check if we're in CLI mode
+$isCLI = php_sapi_name() === 'cli';
 
-// Configuración de URL base - Se ajusta automáticamente
-$protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
-$host = $_SERVER['HTTP_HOST'];
-$path = dirname($_SERVER['SCRIPT_NAME']);
-define('BASE_URL', $protocol . '://' . $host . $path);
+// Start output buffering to prevent "headers already sent" errors (only for web)
+if (!$isCLI && !ob_get_level()) {
+    ob_start();
+}
 
-// Configuración de zona horaria
-date_default_timezone_set('America/Mexico_City');
+// Check if session is already active before configuring
+if (session_status() === PHP_SESSION_ACTIVE) {
+    // Session is already active, skip configuration
+    // This prevents the "Session ini settings cannot be changed when a session is active" warning
+    return;
+}
 
-// Configuración de errores
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+// Only configure session settings if not in CLI mode or if headers haven't been sent
+if ($isCLI || !headers_sent()) {
+    // Configure session settings BEFORE starting the session
+    // These are the lines that were causing the warnings (lines 24-26)
+    ini_set('session.cookie_httponly', 1);    // Line 24 equivalent
+    ini_set('session.cookie_secure', 0);      // Line 25 equivalent (set to 1 for HTTPS)
+    ini_set('session.use_strict_mode', 1);    // Line 26 equivalent
 
-// Configuración de sesión
-ini_set('session.cookie_httponly', 1);
-ini_set('session.use_only_cookies', 1);
-ini_set('session.cookie_secure', isset($_SERVER['HTTPS']));
+    // Additional security settings
+    ini_set('session.cookie_lifetime', 0);
+    ini_set('session.gc_maxlifetime', 1800); // 30 minutes
+    ini_set('session.name', 'CONTROL_SESSION');
+}
 
-// Roles de usuario
-define('ROLE_ADMIN', 1);
-define('ROLE_USER', 2);
+// Now it's safe to start the session (only for web requests)
+if (!$isCLI) {
+    session_start();
+}
 
-// Tipos de movimiento
-define('TYPE_INCOME', 'income');
-define('TYPE_EXPENSE', 'expense');
+// Database configuration (if needed)
+define('DB_HOST', 'localhost');
+define('DB_NAME', 'control_db');
+define('DB_USER', 'db_user');
+define('DB_PASS', 'db_pass');
 
-// Configuración de paginación
-define('ITEMS_PER_PAGE', 10);
+// Application configuration
+define('APP_NAME', 'Sistema de Control por Categorías');
+define('BASE_URL', '/'); // Fixed to work with development server
+
 ?>
